@@ -4,8 +4,12 @@ import com.yemmu.demomember.entity.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +46,32 @@ public class MemberJdbcTemplateRepository implements MemberRepository {
 
     @Override
     public Member save(Member member) {
-        return null;
+        if(member.getMemberId() == null){
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(
+                        "INSERT INTO member(name, email, phone) VALUES ( ?, ?, ?)",
+                        Statement.RETURN_GENERATED_KEYS
+                );
+                ps.setString(1, member.getName());
+                ps.setString(2, member.getEmail());
+                ps.setString(3, member.getPhone());
+                return ps;
+                    }, keyHolder);
+            Number key = keyHolder.getKey();
+
+            if(key != null){
+                member.setMemberId(key.longValue());
+            }else{
+                throw new RuntimeException("오류");
+            }
+        }else {
+            jdbcTemplate.update("UPDATE member set name = ?, email = ?, phone = ? WHERE member_id = ?",
+                    member.getName(), member.getEmail(), member.getPhone(), member.getMemberId());
+        }
+
+        return member;
     }
 
     @Override
