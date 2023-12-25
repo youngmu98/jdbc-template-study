@@ -13,5 +13,5 @@ public interface MemberRepository {
 
     Member save(Member member);
 
-    void delete(Member member); // 왜 객체를 parameter로 받는지 생각해보기
+    void delete(Long memberId); // 왜 객체를 parameter로 받는지 생각해보기
 }

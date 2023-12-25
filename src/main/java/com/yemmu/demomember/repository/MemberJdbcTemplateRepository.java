@@ -75,7 +75,7 @@ public class MemberJdbcTemplateRepository implements MemberRepository {
     }
 
     @Override
-    public void delete(Member member) {
-
+    public void delete(Long memberId) {
+        jdbcTemplate.update("DELETE FROM member where member_id = ?",memberId);
     }
 }

@@ -27,4 +27,8 @@ public class MemberService {
     public Member saveMember(Member member){
         return memberRepository.save(member);
     }
+
+    public void deleteMember(Long memberId) {
+        memberRepository.delete(memberId);
+    }
 }
